@@ -24,9 +24,7 @@ const createTransporter = () => {
   });
 };
 
-/**
- * Send email notification about a new run
- */
+
 export async function sendNewRunEmail(
   to: string,
   data: NewRunEmailData
