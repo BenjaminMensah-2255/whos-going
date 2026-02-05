@@ -28,7 +28,7 @@ export default function AddItemForm({ runId, onSuccess }: AddItemFormProps) {
     });
 
     if (result.success) {
-      // Page will reload, no need to reset form
+      // Page will reload, no need to freset form
       if (onSuccess) onSuccess();
       window.location.reload();
     } else {
