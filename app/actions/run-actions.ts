@@ -68,11 +68,12 @@ export async function createRun(data: CreateRunInput) {
 
     console.log('🎯 Run created, triggering email notifications...');
 
-    // Send email notifications (don't block on this)
-    // Import dynamically to avoid circular dependencies
-    import('@/lib/email/resend').then(({ notifyUsersAboutNewRun }) => {
-      console.log('📧 Email module loaded, calling notifyUsersAboutNewRun...');
-      notifyUsersAboutNewRun(
+    // Send email notifications (Blocking to ensure Vercel sends it)
+    try {
+      const { notifyUsersAboutNewRun } = await import('@/lib/email/resend');
+      console.log('📧 Email module loaded, triggering notifications...');
+      
+      await notifyUsersAboutNewRun(
         {
           vendorName: run.vendorName,
           runnerName: runner.name,
@@ -81,14 +82,13 @@ export async function createRun(data: CreateRunInput) {
           note: run.note,
         },
         userId
-      ).then(({ sent, failed }) => {
-        console.log(`✅ Email notifications complete: ${sent} sent, ${failed} failed`);
-      }).catch((error) => {
-        console.error('❌ Failed to send email notifications:', error);
-      });
-    }).catch((error) => {
-      console.error('❌ Failed to import email module:', error);
-    });
+      );
+      
+      console.log('✅ Email notifications process finished');
+    } catch (error) {
+      // Don't fail the request if email fails, but log it
+      console.error('❌ Failed to send email notifications:', error);
+    }
 
     revalidatePath('/');
     return { success: true, runId: run._id.toString() };
