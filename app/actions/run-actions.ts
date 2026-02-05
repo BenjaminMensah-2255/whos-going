@@ -51,6 +51,12 @@ export async function createRun(data: CreateRunInput) {
     // Calculate departure time
     const departureTime = new Date(Date.now() + data.departureMinutes * 60 * 1000);
 
+    // Get runner info for email
+    const runner = await User.findById(userId);
+    if (!runner) {
+      return { success: false, error: 'User not found' };
+    }
+
     // Create run
     const run = await Run.create({
       vendorName: data.vendorName.trim(),
@@ -58,6 +64,25 @@ export async function createRun(data: CreateRunInput) {
       departureTime,
       note: data.note?.trim(),
       status: 'open',
+    });
+
+    // Send email notifications (don't block on this)
+    // Import dynamically to avoid circular dependencies
+    import('@/lib/email/resend').then(({ notifyUsersAboutNewRun }) => {
+      notifyUsersAboutNewRun(
+        {
+          vendorName: run.vendorName,
+          runnerName: runner.name,
+          departureTime: run.departureTime.toISOString(),
+          runId: run._id.toString(),
+          note: run.note,
+        },
+        userId
+      ).then(({ sent, failed }) => {
+        console.log(`Email notifications: ${sent} sent, ${failed} failed`);
+      }).catch((error) => {
+        console.error('Failed to send email notifications:', error);
+      });
     });
 
     revalidatePath('/');

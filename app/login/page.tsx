@@ -15,7 +15,10 @@ export default function LoginPage() {
     setError('');
     setIsLoading(true);
 
-    const result = await loginUser(name);
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const email = formData.get('email') as string;
+
+    const result = await loginUser(name, email || undefined);
     
     if (result.success) {
       router.push('/');
@@ -62,8 +65,21 @@ export default function LoginPage() {
                 maxLength={50}
                 autoFocus
               />
+            </div>
+
+            <div>
+              <label htmlFor="email" className="label">
+                Email (optional)
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                className="input-field"
+                placeholder="your.email@example.com"
+              />
               <p className="text-xs text-muted mt-1">
-                No password needed - just your name to get started
+                Get notified when someone posts a new run
               </p>
             </div>
 

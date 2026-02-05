@@ -8,7 +8,7 @@ import { setCurrentUserId, getCurrentUser as getUser } from '@/lib/auth';
 /**
  * Login or create a user by name
  */
-export async function loginUser(name: string) {
+export async function loginUser(name: string, email?: string) {
   try {
     await dbConnect();
 
@@ -22,7 +22,16 @@ export async function loginUser(name: string) {
     let user = await User.findOne({ name: trimmedName });
     
     if (!user) {
-      user = await User.create({ name: trimmedName });
+      user = await User.create({ 
+        name: trimmedName,
+        email: email?.trim() || undefined,
+        notificationsEnabled: !!email, // Enable notifications if email provided
+      });
+    } else if (email && email.trim()) {
+      // Update email if provided and user exists
+      user.email = email.trim();
+      user.notificationsEnabled = true;
+      await user.save();
     }
 
     // Set auth cookie
