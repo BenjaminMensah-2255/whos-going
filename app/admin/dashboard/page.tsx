@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { isAdminAuthenticated, getAdminStats, adminLogout } from '@/app/actions/admin-actions';
+import { isAdminAuthenticated, getAdminStats } from '@/app/actions/admin-actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,11 +31,9 @@ export default async function AdminDashboard() {
             <Link href="/" className="btn-secondary">
               ← Back to App
             </Link>
-            <form action={adminLogout}>
-              <button type="submit" className="btn-secondary">
-                Logout
-              </button>
-            </form>
+            <Link href="/admin" className="btn-secondary">
+              Logout
+            </Link>
           </div>
         </div>
       </header>

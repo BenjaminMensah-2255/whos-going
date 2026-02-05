@@ -44,7 +44,6 @@ export async function adminLogin(password: string) {
 export async function adminLogout() {
   const cookieStore = await cookies();
   cookieStore.delete(ADMIN_COOKIE_NAME);
-  return { success: true };
 }
 
 /**
