@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendNewRunEmail } from '@/lib/email/resend';
 
 export async function POST(request: Request) {
   try {
@@ -14,74 +12,39 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!process.env.RESEND_API_KEY) {
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
       return NextResponse.json(
-        { error: 'RESEND_API_KEY not configured' },
+        { error: 'Gmail credentials not configured. Check GMAIL_USER and GMAIL_APP_PASSWORD in .env.local' },
         { status: 500 }
       );
     }
 
     console.log(`🧪 Testing email to: ${email}`);
 
-    const result = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'Who\'s Going <onboarding@resend.dev>',
-      to: email,
-      subject: '✅ Email Test - Who\'s Going',
-      html: `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <meta charset="utf-8">
-            <style>
-              body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                background-color: #FAF8F5;
-                margin: 0;
-                padding: 20px;
-              }
-              .container {
-                max-width: 600px;
-                margin: 0 auto;
-                background: white;
-                border-radius: 12px;
-                padding: 32px;
-                border: 1px solid #D4CFC4;
-              }
-              h1 {
-                color: #2C2C2C;
-              }
-              .success {
-                background: #dcfce7;
-                color: #166534;
-                padding: 16px;
-                border-radius: 8px;
-                margin: 20px 0;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <h1>✅ Email Test Successful!</h1>
-              <div class="success">
-                <p><strong>Congratulations!</strong></p>
-                <p>Your email configuration is working correctly. You will now receive notifications when new runs are posted.</p>
-              </div>
-              <p style="color: #8B8680; font-size: 12px;">
-                This is a test email from Who's Going app.
-              </p>
-            </div>
-          </body>
-        </html>
-      `,
+    const result = await sendNewRunEmail(email, {
+      vendorName: 'Test Vendor (KFC)',
+      runnerName: 'Test User',
+      departureTime: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+      runId: 'test-123',
+      note: 'This is a test email from Who\'s Going!',
     });
 
-    console.log(`✅ Test email sent successfully. ID: ${result.data?.id}`);
-
-    return NextResponse.json({
-      success: true,
-      message: 'Test email sent successfully',
-      emailId: result.data?.id,
-    });
+    if (result.success) {
+      console.log(`✅ Test email sent successfully to ${email}`);
+      return NextResponse.json({
+        success: true,
+        message: 'Test email sent successfully! Check your inbox (and spam folder).',
+      });
+    } else {
+      console.error(`❌ Test email failed:`, result.error);
+      return NextResponse.json(
+        {
+          success: false,
+          error: result.error || 'Failed to send test email',
+        },
+        { status: 500 }
+      );
+    }
   } catch (error) {
     console.error('❌ Test email failed:', error);
     return NextResponse.json(

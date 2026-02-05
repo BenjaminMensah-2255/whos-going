@@ -213,7 +213,7 @@ export async function closeRun(runId: string) {
     }
 
     run.status = 'closed';
-    await run.save();
+    await run.save({ validateBeforeSave: false });
 
     revalidatePath('/');
     revalidatePath(`/runs/${runId}`);

@@ -1,8 +1,6 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-interface NewRunEmailData {
+export interface NewRunEmailData {
   vendorName: string;
   runnerName: string;
   departureTime: string;
@@ -10,8 +8,24 @@ interface NewRunEmailData {
   note?: string;
 }
 
+// Create reusable transporter
+const createTransporter = () => {
+  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+    console.error('❌ Gmail credentials not configured');
+    return null;
+  }
+
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
+};
+
 /**
- * Send email notification to a user about a new run
+ * Send email notification about a new run
  */
 export async function sendNewRunEmail(
   to: string,
@@ -20,9 +34,9 @@ export async function sendNewRunEmail(
   try {
     console.log(`📧 Attempting to send email to: ${to}`);
     
-    if (!process.env.RESEND_API_KEY) {
-      console.error('❌ RESEND_API_KEY not found in environment variables');
-      return { success: false, error: 'Resend API key not configured' };
+    const transporter = createTransporter();
+    if (!transporter) {
+      return { success: false, error: 'Email transporter not configured' };
     }
 
     const departureDate = new Date(data.departureTime);
@@ -33,92 +47,110 @@ export async function sendNewRunEmail(
 
     const runUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/runs/${data.runId}`;
 
-    const result = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'Who\'s Going <onboarding@resend.dev>',
+    const mailOptions = {
+      from: `"Who's Going" <${process.env.GMAIL_USER}>`,
       to,
       subject: `🏃 ${data.runnerName} is going to ${data.vendorName}!`,
       html: `
         <!DOCTYPE html>
         <html>
           <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
               body {
-                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
-                background-color: #FAF8F5;
-                margin: 0;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.6;
+                color: #2C2C2C;
+                max-width: 600px;
+                margin: 0 auto;
                 padding: 20px;
               }
               .container {
-                max-width: 600px;
-                margin: 0 auto;
-                background: white;
+                background: #FFFBF5;
+                border: 2px solid #E8DCC8;
                 border-radius: 12px;
-                padding: 32px;
-                border: 1px solid #D4CFC4;
+                padding: 30px;
+              }
+              .header {
+                text-align: center;
+                margin-bottom: 30px;
+              }
+              .emoji {
+                font-size: 48px;
+                margin-bottom: 10px;
               }
               h1 {
                 color: #2C2C2C;
+                margin: 0 0 10px 0;
                 font-size: 24px;
-                margin: 0 0 16px 0;
               }
               .vendor {
+                color: #8B4513;
                 font-size: 28px;
                 font-weight: bold;
-                color: #2C2C2C;
-                margin: 8px 0;
+                margin: 10px 0;
               }
-              .info {
-                background: #E8E3DA;
-                padding: 16px;
+              .info-box {
+                background: white;
+                border: 1px solid #E8DCC8;
                 border-radius: 8px;
+                padding: 20px;
                 margin: 20px 0;
               }
-              .info-item {
-                margin: 8px 0;
-                color: #2C2C2C;
+              .info-row {
+                margin: 10px 0;
               }
               .label {
-                font-weight: 500;
-                color: #8B8680;
+                color: #666;
                 font-size: 14px;
+              }
+              .value {
+                color: #2C2C2C;
+                font-size: 16px;
+                font-weight: 500;
               }
               .button {
                 display: inline-block;
-                background: #2C2C2C;
-                color: white;
-                padding: 12px 24px;
-                border-radius: 8px;
+                background: #8B4513;
+                color: white !important;
+                padding: 14px 28px;
                 text-decoration: none;
-                font-weight: 500;
+                border-radius: 8px;
+                font-weight: 600;
                 margin: 20px 0;
               }
               .footer {
-                margin-top: 32px;
+                text-align: center;
+                margin-top: 30px;
                 padding-top: 20px;
-                border-top: 1px solid #D4CFC4;
-                color: #8B8680;
+                border-top: 1px solid #E8DCC8;
+                color: #666;
                 font-size: 12px;
               }
             </style>
           </head>
           <body>
             <div class="container">
-              <h1>🏃 New Run Posted!</h1>
+              <div class="header">
+                <div class="emoji">🏃</div>
+                <h1>New Run Posted!</h1>
+              </div>
+              
+              <p style="color: #2C2C2C; font-size: 16px;">
+                <strong>${data.runnerName}</strong> is making a run to:
+              </p>
               
               <div class="vendor">${data.vendorName}</div>
               
-              <div class="info">
-                <div class="info-item">
-                  <span class="label">Runner:</span> ${data.runnerName}
+              <div class="info-box">
+                <div class="info-row">
+                  <div class="label">Departure Time</div>
+                  <div class="value">⏰ ${formattedTime}</div>
                 </div>
-                <div class="info-item">
-                  <span class="label">Leaving at:</span> ${formattedTime}
-                </div>
+                
                 ${data.note ? `
-                <div class="info-item">
-                  <span class="label">Note:</span> ${data.note}
+                <div class="info-row">
+                  <div class="label">Note</div>
+                  <div class="value">💬 ${data.note}</div>
                 </div>
                 ` : ''}
               </div>
@@ -136,9 +168,11 @@ export async function sendNewRunEmail(
           </body>
         </html>
       `,
-    });
+    };
 
-    console.log(`✅ Email sent successfully to ${to}. Email ID: ${result.data?.id}`);
+    const info = await transporter.sendMail(mailOptions);
+    
+    console.log(`✅ Email sent successfully to ${to}. Message ID: ${info.messageId}`);
     return { success: true };
   } catch (error) {
     console.error('❌ Failed to send email:', error);
@@ -150,7 +184,7 @@ export async function sendNewRunEmail(
 }
 
 /**
- * Send new run notifications to all users with notifications enabled
+ * Notify all users (except the runner) about a new run
  */
 export async function notifyUsersAboutNewRun(
   data: NewRunEmailData,
@@ -164,7 +198,6 @@ export async function notifyUsersAboutNewRun(
     
     await dbConnect();
 
-    // Get all users with email and notifications enabled, excluding the runner
     const users = await User.find({
       _id: { $ne: excludeUserId },
       email: { $exists: true, $ne: null },
@@ -181,7 +214,6 @@ export async function notifyUsersAboutNewRun(
     let sent = 0;
     let failed = 0;
 
-    // Send emails (in production, consider using a queue for this)
     for (const user of users) {
       if (user.email) {
         const result = await sendNewRunEmail(user.email, data);
