@@ -2,7 +2,7 @@
  * Format number as currency
  */
 export function formatCurrency(amount: number): string {
-  return `$${amount.toFixed(2)}`;
+  return `GH₵${amount.toFixed(2)}`;
 }
 
 /**
