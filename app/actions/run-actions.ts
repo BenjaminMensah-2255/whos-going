@@ -66,9 +66,12 @@ export async function createRun(data: CreateRunInput) {
       status: 'open',
     });
 
+    console.log('🎯 Run created, triggering email notifications...');
+
     // Send email notifications (don't block on this)
     // Import dynamically to avoid circular dependencies
     import('@/lib/email/resend').then(({ notifyUsersAboutNewRun }) => {
+      console.log('📧 Email module loaded, calling notifyUsersAboutNewRun...');
       notifyUsersAboutNewRun(
         {
           vendorName: run.vendorName,
@@ -79,10 +82,12 @@ export async function createRun(data: CreateRunInput) {
         },
         userId
       ).then(({ sent, failed }) => {
-        console.log(`Email notifications: ${sent} sent, ${failed} failed`);
+        console.log(`✅ Email notifications complete: ${sent} sent, ${failed} failed`);
       }).catch((error) => {
-        console.error('Failed to send email notifications:', error);
+        console.error('❌ Failed to send email notifications:', error);
       });
+    }).catch((error) => {
+      console.error('❌ Failed to import email module:', error);
     });
 
     revalidatePath('/');

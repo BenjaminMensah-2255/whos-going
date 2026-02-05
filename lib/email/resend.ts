@@ -18,6 +18,13 @@ export async function sendNewRunEmail(
   data: NewRunEmailData
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    console.log(`📧 Attempting to send email to: ${to}`);
+    
+    if (!process.env.RESEND_API_KEY) {
+      console.error('❌ RESEND_API_KEY not found in environment variables');
+      return { success: false, error: 'Resend API key not configured' };
+    }
+
     const departureDate = new Date(data.departureTime);
     const formattedTime = departureDate.toLocaleTimeString('en-US', {
       hour: 'numeric',
@@ -26,7 +33,7 @@ export async function sendNewRunEmail(
 
     const runUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/runs/${data.runId}`;
 
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: process.env.EMAIL_FROM || 'Who\'s Going <onboarding@resend.dev>',
       to,
       subject: `🏃 ${data.runnerName} is going to ${data.vendorName}!`,
@@ -131,9 +138,10 @@ export async function sendNewRunEmail(
       `,
     });
 
+    console.log(`✅ Email sent successfully to ${to}. Email ID: ${result.data?.id}`);
     return { success: true };
   } catch (error) {
-    console.error('Failed to send email:', error);
+    console.error('❌ Failed to send email:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Failed to send email' 
@@ -149,6 +157,8 @@ export async function notifyUsersAboutNewRun(
   excludeUserId: string
 ): Promise<{ sent: number; failed: number }> {
   try {
+    console.log('📬 Starting email notification process...');
+    
     const { User } = await import('@/lib/db/models/User');
     const dbConnect = (await import('@/lib/db/mongodb')).default;
     
@@ -161,6 +171,13 @@ export async function notifyUsersAboutNewRun(
       notificationsEnabled: true,
     }).select('email name');
 
+    console.log(`📊 Found ${users.length} users with notifications enabled`);
+
+    if (users.length === 0) {
+      console.log('⚠️  No users to notify (no emails or notifications disabled)');
+      return { sent: 0, failed: 0 };
+    }
+
     let sent = 0;
     let failed = 0;
 
@@ -172,13 +189,15 @@ export async function notifyUsersAboutNewRun(
           sent++;
         } else {
           failed++;
+          console.error(`Failed to send to ${user.name} (${user.email}): ${result.error}`);
         }
       }
     }
 
+    console.log(`📧 Email notification complete: ${sent} sent, ${failed} failed`);
     return { sent, failed };
   } catch (error) {
-    console.error('Error notifying users:', error);
+    console.error('❌ Error notifying users:', error);
     return { sent: 0, failed: 0 };
   }
 }

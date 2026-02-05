@@ -28,9 +28,14 @@ export default async function HomePage() {
               Welcome, {user.name}
             </p>
           </div>
-          <Link href="/runs/new" className="btn-primary">
-            + New Run
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/profile" className="btn-secondary">
+              👤 Profile
+            </Link>
+            <Link href="/runs/new" className="btn-primary">
+              + New Run
+            </Link>
+          </div>
         </div>
       </header>
 
