@@ -270,3 +270,62 @@ export async function completeRun(runId: string) {
     return { success: false, error: 'Failed to complete run' };
   }
 }
+
+/**
+ * Extend run time
+ */
+export async function extendRun(runId: string, additionalMinutes: number) {
+  try {
+    const userId = await getCurrentUserId();
+    if (!userId) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    await dbConnect();
+
+    const run = await Run.findById(runId);
+    if (!run) {
+      return { success: false, error: 'Run not found' };
+    }
+
+    // Only runner can extend the run
+    if (run.runnerUserId.toString() !== userId) {
+      return { success: false, error: 'Only the runner can extend this run' };
+    }
+
+    if (run.status === 'completed') {
+      return { success: false, error: 'Cannot extend a completed run' };
+    }
+
+    // If run has already departed (time passed), we'll add time to "now"
+    // If run is still active, we add to the existing departure time
+    const now = new Date();
+    const currentDeparture = new Date(run.departureTime);
+    
+    let newDepartureTime;
+    
+    if (currentDeparture < now) {
+      // If expired, add minutes to NOW
+      newDepartureTime = new Date(now.getTime() + additionalMinutes * 60 * 1000);
+    } else {
+      // If not expired, add minutes to EXISTING time
+      newDepartureTime = new Date(currentDeparture.getTime() + additionalMinutes * 60 * 1000);
+    }
+
+    run.departureTime = newDepartureTime;
+    
+    // Re-open if closed
+    if (run.status === 'closed') {
+      run.status = 'open';
+    }
+
+    await run.save();
+
+    revalidatePath('/');
+    revalidatePath(`/runs/${runId}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Extend run error:', error);
+    return { success: false, error: 'Failed to extend run' };
+  }
+}

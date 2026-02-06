@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { closeRun, completeRun } from '@/app/actions/run-actions';
 
+import ExtendRunButton from '@/components/ExtendRunButton';
+
 interface RunActionsProps {
   runId: string;
   status: 'open' | 'closed' | 'completed';
@@ -46,6 +48,10 @@ export default function RunActions({ runId, status }: RunActionsProps) {
       </h3>
 
       <div className="space-y-3">
+        {(status === 'open' || status === 'closed') && (
+            <ExtendRunButton runId={runId} />
+        )}
+
         {status === 'open' && (
           <button
             onClick={handleClose}
