@@ -96,13 +96,13 @@ export default function AddItemForm({ runId, onSuccess }: AddItemFormProps) {
             <label htmlFor="price" className="label">
               Price *
             </label>
-            <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted">GH₵</span>
+            <div className="flex items-center gap-2">
+              <span className="text-muted font-medium">GHS</span>
               <input
                 type="number"
                 id="price"
                 name="price"
-                className="input-field pl-12"
+                className="input-field flex-1"
                 min="0"
                 step="0.01"
                 placeholder="0.00"

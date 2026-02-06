@@ -123,7 +123,7 @@ export default function ChecklistView({ items, onUpdate }: ChecklistViewProps) {
                   {item.userName}: {item.name}
                 </p>
                 <p className="text-sm text-muted">
-                  {item.quantity} × GH₵{item.price.toFixed(2)} = GH₵{(item.quantity * item.price).toFixed(2)}
+                  {item.quantity} × GHS {item.price.toFixed(2)} = GHS {(item.quantity * item.price).toFixed(2)}
                 </p>
               </div>
               {item.isPaid && (

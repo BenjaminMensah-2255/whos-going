@@ -8,6 +8,7 @@ import ItemList from '@/components/ItemList';
 import ChecklistView from '@/components/ChecklistView';
 import PaymentSummary from '@/components/PaymentSummary';
 import RunActions from '@/app/runs/[id]/RunActions';
+import { Clock } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -94,8 +95,9 @@ export default async function RunDetailsPage({ params }: PageProps) {
             
             {!canAddItems && run.status === 'closed' && (
               <div className="card bg-yellow-50 border-yellow-200">
-                <p className="text-yellow-800 text-center">
-                  ⏰ This run is closed. No more items can be added.
+                <p className="text-yellow-800 text-center flex items-center justify-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  This run is closed. No more items can be added.
                 </p>
               </div>
             )}

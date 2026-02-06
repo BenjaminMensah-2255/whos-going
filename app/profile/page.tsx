@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getCurrentUser } from '@/app/actions/user-actions';
 import { updateUserAdmin } from '@/app/actions/admin-actions';
+import { User, Lightbulb } from 'lucide-react';
 
 interface UserProfile {
   id: string;
@@ -83,8 +84,9 @@ export default function ProfilePage() {
       <header className="bg-white border-b border-[var(--sand)]">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-[var(--charcoal)]">
-              👤 My Profile
+            <h1 className="text-2xl font-bold text-[var(--charcoal)] flex items-center gap-2">
+              <User className="w-6 h-6" />
+              My Profile
             </h1>
             <a href="/" className="btn-secondary">
               ← Back to Home
@@ -168,8 +170,9 @@ export default function ProfilePage() {
 
         {/* Help Card */}
         <div className="card mt-6">
-          <h3 className="text-lg font-semibold text-[var(--charcoal)] mb-3">
-            💡 Tips
+          <h3 className="text-lg font-semibold text-[var(--charcoal)] mb-3 flex items-center gap-2">
+            <Lightbulb className="w-5 h-5" />
+            Tips
           </h3>
           <ul className="space-y-2 text-sm text-muted">
             <li>• To update your email, logout and login again</li>

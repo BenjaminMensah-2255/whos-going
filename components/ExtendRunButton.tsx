@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { extendRun } from '@/app/actions/run-actions';
+import { Clock } from 'lucide-react';
 
 interface ExtendRunButtonProps {
   runId: string;
@@ -31,9 +32,14 @@ export default function ExtendRunButton({ runId }: ExtendRunButtonProps) {
           type="button"
           onClick={() => setShowOptions(!showOptions)}
           disabled={loading}
-          className="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-[var(--charcoal)] bg-white border border-[var(--sand)] rounded-md shadow-sm hover:bg-[var(--cream)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--brown)]"
+          className="inline-flex justify-center items-center gap-2 w-full px-4 py-2 text-sm font-medium text-[var(--charcoal)] bg-white border border-[var(--sand)] rounded-md shadow-sm hover:bg-[var(--cream)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--brown)]"
         >
-          {loading ? 'Updating...' : '⏰ Extend Time'}
+          {loading ? 'Updating...' : (
+            <>
+              <Clock className="w-4 h-4" />
+              Extend Time
+            </>
+          )}
         </button>
       </div>
 
