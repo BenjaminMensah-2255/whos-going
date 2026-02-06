@@ -13,8 +13,11 @@ A production-ready micro-logistics web application for coordinating group orders
 - ✅ **Create Runs** - Post where you're going and when
 - ✅ **Join Runs** - Add your items to existing runs
 - ✅ **Live Countdown** - Real-time timer with auto-close
+- ✅ **Smart Visibility** - Departed runs auto-hide for non-runners
+- ✅ **Email Notifications** - Alerts for new runs and added items
 - ✅ **Shopping Checklist** - Runner gets consolidated list
 - ✅ **Payment Tracking** - Per-user totals and payment status
+- ✅ **Extendable Time** - Runners can add time if running late
 - ✅ **Mobile-First** - Responsive design for all devices
 - ✅ **Clean UI** - Boutique aesthetic with smooth animations
 
@@ -98,7 +101,8 @@ If you created the run, you'll see:
 - **Shopping List** - Items grouped by name
 - **Payment Tracking** - Checkbox for each item
 - **Payment Summary** - Per-user totals
-- **Run Management** - Close or complete the run
+- **Run Management** - Extend time, Close, or Complete the run
+- **Notifications** - Get email alerts when items are added
 
 ### 5. Status Flow
 
@@ -204,8 +208,9 @@ npm start
 **Run Actions**
 
 - `createRun(data)` - Create new run
-- `getActiveRuns()` - Get all active runs
+- `getActiveRuns()` - Get all active runs (filters out departed runs for non-runners)
 - `getRunById(id)` - Get run with items
+- `extendRun(id, minutes)` - Extend departure time (runner only)
 - `closeRun(id)` - Close run (runner only)
 - `completeRun(id)` - Complete run (runner only)
 
