@@ -105,8 +105,22 @@ export async function getActiveRuns(): Promise<RunWithDetails[]> {
   try {
     await dbConnect();
 
+    const userId = await getCurrentUserId();
+    const now = new Date();
+
     const runs = await Run.find({
-      status: { $in: ['open', 'closed'] },
+      $or: [
+        // Rule 1: Public runs must be Open AND in the future
+        { 
+          status: 'open',
+          departureTime: { $gt: now } 
+        },
+        // Rule 2: The runner can see their own runs regardless of time (if open or closed)
+        { 
+          runnerUserId: userId ? new mongoose.Types.ObjectId(userId) : null,
+          status: { $in: ['open', 'closed'] }
+        }
+      ]
     })
       .sort({ departureTime: 1 })
       .populate('runnerUserId', 'name')
