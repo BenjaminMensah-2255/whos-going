@@ -67,6 +67,37 @@ export async function addItem(runId: string, data: CreateItemInput) {
     revalidatePath(`/runs/${runId}`);
     revalidatePath('/');
     
+    // Send email notification to the runner
+    try {
+      // Get the runner's info
+      const { User } = await import('@/lib/db/models/User');
+      const runner = await User.findById(run.runnerUserId);
+      
+      // Don't notify if the runner is adding an item to their own run
+      if (runner && runner._id.toString() !== userId && runner.notificationsEnabled && runner.email) {
+        // Get the requester's name
+        const requester = await User.findById(userId);
+        
+        if (requester) {
+          console.log('📧 Triggering item added email notification...');
+          const { sendItemAddedEmail } = await import('@/lib/email/resend');
+          
+          await sendItemAddedEmail(runner.email, {
+            runnerName: runner.name,
+            runnerEmail: runner.email,
+            requesterName: requester.name,
+            itemName: item.name,
+            quantity: item.quantity,
+            runId: runId,
+            vendorName: run.vendorName,
+          });
+        }
+      }
+    } catch (error) {
+      // Don't fail the request if email fails, but log it
+      console.error('❌ Failed to send item added email notification:', error);
+    }
+    
     return { 
       success: true, 
       itemId: item._id.toString(),

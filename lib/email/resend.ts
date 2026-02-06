@@ -8,6 +8,16 @@ export interface NewRunEmailData {
   note?: string;
 }
 
+export interface ItemAddedEmailData {
+  runnerName: string;
+  runnerEmail: string;
+  requesterName: string;
+  itemName: string;
+  quantity: number;
+  runId: string;
+  vendorName: string;
+}
+
 // Create reusable transporter
 const createTransporter = () => {
   if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
@@ -174,6 +184,151 @@ export async function sendNewRunEmail(
     return { success: true };
   } catch (error) {
     console.error('❌ Failed to send email:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Failed to send email' 
+    };
+  }
+}
+
+export async function sendItemAddedEmail(
+  to: string,
+  data: ItemAddedEmailData
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    console.log(`📧 Attempting to send item added email to: ${to}`);
+    
+    const transporter = createTransporter();
+    if (!transporter) {
+      return { success: false, error: 'Email transporter not configured' };
+    }
+
+    const runUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/runs/${data.runId}`;
+
+    const mailOptions = {
+      from: `"Who's Going" <${process.env.GMAIL_USER}>`,
+      to,
+      subject: `🛍️ ${data.requesterName} added an item to your run!`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.6;
+                color: #2C2C2C;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+              }
+              .container {
+                background: #FFFBF5;
+                border: 2px solid #E8DCC8;
+                border-radius: 12px;
+                padding: 30px;
+              }
+              .header {
+                text-align: center;
+                margin-bottom: 30px;
+              }
+              .emoji {
+                font-size: 48px;
+                margin-bottom: 10px;
+              }
+              h1 {
+                color: #2C2C2C;
+                margin: 0 0 10px 0;
+                font-size: 24px;
+              }
+              .vendor {
+                color: #8B4513;
+                font-size: 20px;
+                font-weight: bold;
+                margin: 5px 0 20px 0;
+              }
+              .info-box {
+                background: white;
+                border: 1px solid #E8DCC8;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 20px 0;
+              }
+              .info-row {
+                margin: 10px 0;
+              }
+              .label {
+                color: #666;
+                font-size: 14px;
+              }
+              .value {
+                color: #2C2C2C;
+                font-size: 18px;
+                font-weight: 500;
+              }
+              .button {
+                display: inline-block;
+                background: #8B4513;
+                color: white !important;
+                padding: 14px 28px;
+                text-decoration: none;
+                border-radius: 8px;
+                font-weight: 600;
+                margin: 20px 0;
+              }
+              .footer {
+                text-align: center;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #E8DCC8;
+                color: #666;
+                font-size: 12px;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <div class="emoji">🛍️</div>
+                <h1>New Item Added!</h1>
+                <div class="vendor">Run: ${data.vendorName}</div>
+              </div>
+              
+              <p style="color: #2C2C2C; font-size: 16px;">
+                <strong>${data.requesterName}</strong> just added an item to your run.
+              </p>
+              
+              <div class="info-box">
+                <div class="info-row">
+                  <div class="label">Item</div>
+                  <div class="value">${data.itemName}</div>
+                </div>
+                
+                <div class="info-row">
+                  <div class="label">Quantity</div>
+                  <div class="value">x${data.quantity}</div>
+                </div>
+              </div>
+              
+              <p style="text-align: center;">
+                <a href="${runUrl}" class="button">View Run & Checklist</a>
+              </p>
+              
+              <div class="footer">
+                <p>You're receiving this because you created this run in Who's Going.</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    
+    console.log(`✅ Item added email sent successfully to ${to}. Message ID: ${info.messageId}`);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Failed to send item added email:', error);
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Failed to send email' 
