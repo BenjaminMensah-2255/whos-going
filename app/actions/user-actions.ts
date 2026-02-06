@@ -18,18 +18,32 @@ export async function loginUser(name: string, email?: string) {
       return { success: false, error: 'Name must be at least 2 characters' };
     }
 
+    // Trim email if provided
+    const trimmedEmail = email?.trim();
+
+    // Check if email is already used by a different user
+    if (trimmedEmail) {
+      const existingEmailUser = await User.findOne({ email: trimmedEmail });
+      if (existingEmailUser && existingEmailUser.name !== trimmedName) {
+        return { 
+          success: false, 
+          error: 'This email is already registered to another account. Please use a different email or login with the correct name.' 
+        };
+      }
+    }
+
     // Find existing user or create new one
     let user = await User.findOne({ name: trimmedName });
     
     if (!user) {
       user = await User.create({ 
         name: trimmedName,
-        email: email?.trim() || undefined,
-        notificationsEnabled: !!email, // Enable notifications if email provided
+        email: trimmedEmail || undefined,
+        notificationsEnabled: !!trimmedEmail,
       });
-    } else if (email && email.trim()) {
+    } else if (trimmedEmail) {
       // Update email if provided and user exists
-      user.email = email.trim();
+      user.email = trimmedEmail;
       user.notificationsEnabled = true;
       await user.save();
     }
