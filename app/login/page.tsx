@@ -17,8 +17,9 @@ export default function LoginPage() {
 
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const email = formData.get('email') as string;
+    const phoneNumber = formData.get('phoneNumber') as string;
 
-    const result = await loginUser(name, email || undefined);
+    const result = await loginUser(name, email || undefined, phoneNumber);
     
     if (result.success) {
       router.push('/');
@@ -84,6 +85,23 @@ export default function LoginPage() {
               </p>
             </div>
 
+            <div>
+              <label htmlFor="phoneNumber" className="label">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                id="phoneNumber"
+                name="phoneNumber"
+                className="input-field"
+                placeholder="024 123 4567"
+                required
+              />
+              <p className="text-xs text-muted mt-1">
+                Shared with others only when you create a run
+              </p>
+            </div>
+            
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
                 {error}

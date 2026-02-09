@@ -8,7 +8,7 @@ import { setCurrentUserId, getCurrentUser as getUser } from '@/lib/auth';
 /**
  * Login or create a user by name
  */
-export async function loginUser(name: string, email?: string) {
+export async function loginUser(name: string, email?: string, phoneNumber?: string) {
   try {
     await dbConnect();
 
@@ -24,28 +24,38 @@ export async function loginUser(name: string, email?: string) {
       return { success: false, error: 'Email is required' };
     }
 
+    // Validate phone number
+    const trimmedPhone = phoneNumber?.trim();
+    if (!trimmedPhone) {
+      return { success: false, error: 'Phone number is required' };
+    }
+
     // Find existing user by email
     let user = await User.findOne({ email: trimmedEmail });
     
     if (user) {
-      // If user exists, update name if needed (optional, or we could require name match)
-      // For now, let's just ensure we return this user. 
-      // If the name is DIFFERENT, maybe we should warn? 
-      // But the prompt says "login with name and email". 
-      // Let's assume broad matching: if email matches, use that user. 
-      // If name is different, maybe update it?
+      // Update user details if they exist
+      let hasChanges = false;
+      
       if (user.name !== trimmedName) {
         user.name = trimmedName;
+        hasChanges = true;
+      }
+      
+      if (user.phoneNumber !== trimmedPhone) {
+        user.phoneNumber = trimmedPhone;
+        hasChanges = true;
+      }
+      
+      if (hasChanges) {
         await user.save();
       }
     } else {
-      // Check if name is taken by a DIFFERENT email (unlikely if unique constraint is on email, but possible on name?)
-      // We don't have unique constraint on name in schema.
-      
       // Create new user
       user = await User.create({ 
         name: trimmedName,
         email: trimmedEmail,
+        phoneNumber: trimmedPhone,
         notificationsEnabled: true,
       });
     }

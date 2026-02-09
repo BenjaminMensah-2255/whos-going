@@ -8,6 +8,7 @@ interface UserData {
   id: string;
   name: string;
   email: string | null;
+  phoneNumber: string | null;
   emailVerified: boolean;
   notificationsEnabled: boolean;
   createdAt: string;
@@ -114,6 +115,7 @@ export default function UsersManagementPage() {
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-[var(--charcoal)]">Name</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-[var(--charcoal)]">Email</th>
+                  <th className="px-4 py-3 text-left text-sm font-semibold text-[var(--charcoal)]">Phone</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-[var(--charcoal)]">Notifications</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-[var(--charcoal)]">Stats</th>
                   <th className="px-4 py-3 text-left text-sm font-semibold text-[var(--charcoal)]">Joined</th>

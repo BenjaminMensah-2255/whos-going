@@ -9,6 +9,7 @@ interface UserProfile {
   id: string;
   name: string;
   email?: string;
+  phoneNumber?: string;
   notificationsEnabled: boolean;
   createdAt: string;
 }
@@ -36,6 +37,7 @@ export default function ProfilePage() {
             id: currentUser.id,
             name: currentUser.name,
             email: fullUser.email !== 'No email' ? fullUser.email : undefined,
+            phoneNumber: fullUser.phoneNumber,
             notificationsEnabled: fullUser.notificationsEnabled,
             createdAt: currentUser.createdAt,
           });
@@ -126,6 +128,20 @@ export default function ProfilePage() {
                   <p className="text-xs text-muted mt-1">
                     To add an email, logout and login again with your email address
                   </p>
+                </div>
+              )}
+            </div>
+
+            {/* Phone Number */}
+            <div>
+              <label className="label">Phone Number</label>
+              {user.phoneNumber ? (
+                <div className="input-field bg-[var(--beige)]/20 cursor-not-allowed">
+                  {user.phoneNumber}
+                </div>
+              ) : (
+                <div className="input-field bg-yellow-50 border-yellow-200 text-yellow-800">
+                  No phone number set
                 </div>
               )}
             </div>

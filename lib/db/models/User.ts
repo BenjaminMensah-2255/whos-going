@@ -4,6 +4,7 @@ export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
   name: string;
   email?: string;
+  phoneNumber: string;
   emailVerified: boolean;
   notificationsEnabled: boolean;
   createdAt: Date;
@@ -24,6 +25,11 @@ const UserSchema = new Schema<IUser>({
     lowercase: true,
     unique: true,
     match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email address'],
+  },
+  phoneNumber: {
+    type: String,
+    required: [true, 'Phone number is required'],
+    trim: true,
   },
   emailVerified: {
     type: Boolean,

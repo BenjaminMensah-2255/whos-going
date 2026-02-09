@@ -72,6 +72,7 @@ export async function getAllUsers() {
           id: user._id.toString(),
           name: user.name,
           email: user.email || null,
+          phoneNumber: user.phoneNumber || null,
           emailVerified: user.emailVerified || false,
           notificationsEnabled: user.notificationsEnabled || false,
           createdAt: user.createdAt.toISOString(),
@@ -138,6 +139,7 @@ export async function getAdminStats() {
 export async function updateUserAdmin(userId: string, data: {
   name?: string;
   email?: string;
+  phoneNumber?: string;
   notificationsEnabled?: boolean;
 }) {
   try {
@@ -155,6 +157,7 @@ export async function updateUserAdmin(userId: string, data: {
 
     if (data.name !== undefined) user.name = data.name;
     if (data.email !== undefined) user.email = data.email;
+    if (data.phoneNumber !== undefined) user.phoneNumber = data.phoneNumber;
     if (data.notificationsEnabled !== undefined) {
       user.notificationsEnabled = data.notificationsEnabled;
     }

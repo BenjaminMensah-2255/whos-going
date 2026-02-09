@@ -20,6 +20,7 @@ export interface RunWithDetails {
   vendorName: string;
   runnerUserId: string;
   runnerName: string;
+  runnerPhoneNumber?: string;
   departureTime: string;
   note?: string;
   status: 'open' | 'closed' | 'completed';
@@ -123,7 +124,8 @@ export async function getActiveRuns(): Promise<RunWithDetails[]> {
       ]
     })
       .sort({ departureTime: 1 })
-      .populate('runnerUserId', 'name')
+      .sort({ departureTime: 1 })
+      .populate('runnerUserId', 'name phoneNumber')
       .lean();
 
     // Get item counts for each run
@@ -142,6 +144,7 @@ export async function getActiveRuns(): Promise<RunWithDetails[]> {
       vendorName: run.vendorName,
       runnerUserId: run.runnerUserId._id.toString(),
       runnerName: (run.runnerUserId as any).name,
+      runnerPhoneNumber: (run.runnerUserId as any).phoneNumber,
       departureTime: run.departureTime.toISOString(),
       note: run.note,
       status: run.status,
@@ -166,7 +169,7 @@ export async function getRunById(runId: string) {
     }
 
     const run = await Run.findById(runId)
-      .populate('runnerUserId', 'name')
+      .populate('runnerUserId', 'name phoneNumber')
       .lean();
 
     if (!run) return null;
@@ -182,6 +185,7 @@ export async function getRunById(runId: string) {
       vendorName: run.vendorName,
       runnerUserId: run.runnerUserId._id.toString(),
       runnerName: (run.runnerUserId as any).name,
+      runnerPhoneNumber: (run.runnerUserId as any).phoneNumber,
       departureTime: run.departureTime.toISOString(),
       note: run.note,
       status: run.status,

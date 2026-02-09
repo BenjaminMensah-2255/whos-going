@@ -50,10 +50,22 @@ export default async function RunDetailsPage({ params }: PageProps) {
               <h1 className="text-2xl sm:text-3xl font-bold text-[var(--charcoal)] mb-1 break-words">
                 {run.vendorName}
               </h1>
-              <p className="text-muted text-sm sm:text-base">
-                Runner: <span className="font-medium text-[var(--charcoal)]">{run.runnerName}</span>
-                {isRunner && <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">You</span>}
-              </p>
+              <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                <p className="text-muted text-sm sm:text-base">
+                  Runner: <span className="font-medium text-[var(--charcoal)]">{run.runnerName}</span>
+                  {isRunner && <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">You</span>}
+                </p>
+                {run.runnerPhoneNumber && (
+                  <p className="text-sm text-[var(--brown)] flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <a href={`tel:${run.runnerPhoneNumber}`} className="hover:underline font-medium">
+                      {run.runnerPhoneNumber}
+                    </a>
+                  </p>
+                )}
+              </div>
             </div>
             <StatusBadge status={run.status} />
           </div>
