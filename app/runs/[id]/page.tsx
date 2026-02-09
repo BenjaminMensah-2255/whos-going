@@ -45,12 +45,12 @@ export default async function RunDetailsPage({ params }: PageProps) {
             Back to runs
           </Link>
 
-          <div className="flex items-start justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-[var(--charcoal)] mb-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[var(--charcoal)] mb-1 break-words">
                 {run.vendorName}
               </h1>
-              <p className="text-muted">
+              <p className="text-muted text-sm sm:text-base">
                 Runner: <span className="font-medium text-[var(--charcoal)]">{run.runnerName}</span>
                 {isRunner && <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">You</span>}
               </p>

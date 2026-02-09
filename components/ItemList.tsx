@@ -11,6 +11,7 @@ interface ItemWithUser {
   name: string;
   quantity: number;
   price: number;
+  notes?: string;
   isPaid: boolean;
 }
 
@@ -87,6 +88,11 @@ export default function ItemList({ items, currentUserId, runStatus, onUpdate }: 
                   <p className="text-sm text-muted">
                     Qty: {item.quantity} × {formatCurrency(item.price)} = {formatCurrency(item.price * item.quantity)}
                   </p>
+                  {item.notes && (
+                    <p className="text-xs text-[var(--brown)] mt-1 italic">
+                      📝 {item.notes}
+                    </p>
+                  )}
                 </div>
 
                 {/* Actions (only for item owner and if run is open) */}

@@ -7,6 +7,7 @@ export interface IItem extends Document {
   name: string;
   quantity: number;
   price: number;
+  notes?: string;
   isPaid: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -44,6 +45,11 @@ const ItemSchema = new Schema<IItem>(
       min: [0, 'Price must be non-negative'],
       max: [99999, 'Price must be less than 100,000'],
       default: 0,
+    },
+    notes: {
+      type: String,
+      trim: true,
+      maxlength: [500, 'Notes must be less than 500 characters'],
     },
     isPaid: {
       type: Boolean,

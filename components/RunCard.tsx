@@ -22,7 +22,7 @@ export default function RunCard({ run }: RunCardProps) {
     <Link href={`/runs/${run.id}`} className="block">
       <div className="card hover:border-[var(--charcoal)] transition-colors">
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-4 gap-4">
           <div className="flex-1">
             <h3 className="text-2xl font-bold text-[var(--charcoal)] mb-1">
               {run.vendorName}

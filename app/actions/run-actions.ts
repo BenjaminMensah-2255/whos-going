@@ -194,6 +194,7 @@ export async function getRunById(runId: string) {
         name: item.name,
         quantity: item.quantity,
         price: item.price,
+        notes: item.notes,
         isPaid: item.isPaid,
         createdAt: item.createdAt.toISOString(),
       })),

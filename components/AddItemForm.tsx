@@ -25,6 +25,7 @@ export default function AddItemForm({ runId, onSuccess }: AddItemFormProps) {
       name: formData.get('name') as string,
       quantity: parseInt(formData.get('quantity') as string),
       price: parseFloat(formData.get('price') as string),
+      notes: formData.get('notes') as string,
     });
 
     if (result.success) {
@@ -75,7 +76,7 @@ export default function AddItemForm({ runId, onSuccess }: AddItemFormProps) {
         </div>
 
         {/* Quantity and Price */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label htmlFor="quantity" className="label">
               Quantity *
@@ -110,6 +111,20 @@ export default function AddItemForm({ runId, onSuccess }: AddItemFormProps) {
               />
             </div>
           </div>
+
+        {/* Notes */}
+        <div>
+          <label htmlFor="notes" className="label">
+            Special Instructions (Optional)
+          </label>
+          <textarea
+            id="notes"
+            name="notes"
+            className="input-field min-h-[80px] py-2"
+            placeholder="e.g., No onions, extra spicy, etc."
+            maxLength={500}
+          />
+        </div>
         </div>
 
         {/* Error */}

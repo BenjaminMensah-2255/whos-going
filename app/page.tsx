@@ -20,8 +20,8 @@ export default async function HomePage() {
     <div className="min-h-screen">
       {/* Header */}
       <header className="bg-white border-b border-[var(--sand)] sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
+        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+          <div className="text-center sm:text-left">
             <h1 className="text-2xl font-bold text-[var(--charcoal)]">
               Who's Going?
             </h1>
@@ -29,12 +29,12 @@ export default async function HomePage() {
               Welcome, {user.name}
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Link href="/profile" className="btn-secondary flex items-center gap-2">
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-end">
+            <Link href="/profile" className="btn-secondary flex items-center gap-2 text-sm px-3 py-2">
               <User className="w-4 h-4" />
               Profile
             </Link>
-            <Link href="/runs/new" className="btn-primary">
+            <Link href="/runs/new" className="btn-primary text-sm px-3 py-2">
               + New Run
             </Link>
           </div>

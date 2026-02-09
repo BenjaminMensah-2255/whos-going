@@ -11,12 +11,14 @@ export interface CreateItemInput {
   name: string;
   quantity: number;
   price: number;
+  notes?: string;
 }
 
 export interface UpdateItemInput {
   name?: string;
   quantity?: number;
   price?: number;
+  notes?: string;
 }
 
 /**
@@ -61,6 +63,7 @@ export async function addItem(runId: string, data: CreateItemInput) {
       name: data.name.trim(),
       quantity: data.quantity,
       price: data.price,
+      notes: data.notes ? data.notes.trim() : undefined,
       isPaid: false,
     });
 
@@ -168,6 +171,13 @@ export async function updateItem(itemId: string, data: UpdateItemInput) {
       item.price = data.price;
     }
 
+    if (data.notes !== undefined) {
+      if (data.notes.length > 500) {
+        return { success: false, error: 'Notes must be less than 500 characters' };
+      }
+      item.notes = data.notes.trim() || undefined;
+    }
+
     await item.save();
 
     revalidatePath(`/runs/${item.runId.toString()}`);
@@ -211,6 +221,38 @@ export async function deleteItem(itemId: string) {
     }
 
     const runId = item.runId.toString();
+
+    // Send email notification to the runner BEFORE deleting
+    try {
+      // Get the runner's info
+      const { User } = await import('@/lib/db/models/User');
+      const runner = await User.findById(run.runnerUserId);
+      
+      // Don't notify if the runner is deleting their own item
+      if (runner && runner._id.toString() !== userId && runner.notificationsEnabled && runner.email) {
+        // Get the requester's name (the one deleting the item)
+        const requester = await User.findById(userId);
+        
+        if (requester) {
+          console.log('📧 Triggering item deleted email notification...');
+          const { sendItemDeletedEmail } = await import('@/lib/email/resend');
+          
+          await sendItemDeletedEmail(runner.email, {
+            runnerName: runner.name,
+            runnerEmail: runner.email,
+            requesterName: requester.name,
+            itemName: item.name,
+            quantity: item.quantity,
+            runId: runId,
+            vendorName: run.vendorName,
+          });
+        }
+      }
+    } catch (error) {
+      // Don't fail the request if email fails, but log it
+      console.error('❌ Failed to send item deleted email notification:', error);
+    }
+
     await item.deleteOne();
 
     revalidatePath(`/runs/${runId}`);

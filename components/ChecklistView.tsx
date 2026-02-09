@@ -10,6 +10,7 @@ interface ItemWithUser {
   name: string;
   quantity: number;
   price: number;
+  notes?: string;
   isPaid: boolean;
 }
 
@@ -93,6 +94,16 @@ export default function ChecklistView({ items, onUpdate }: ChecklistViewProps) {
               <p className="text-sm text-muted">
                 Total quantity: {group.totalQuantity}
               </p>
+              {/* Show notes for items in this group */}
+              {group.items.some(item => item.notes) && (
+                <div className="mt-1 space-y-1">
+                  {group.items.filter(item => item.notes).map(item => (
+                    <p key={item.id} className="text-xs text-[var(--brown)] italic pl-1 border-l-2 border-[var(--brown)]/30">
+                      <span className="font-medium">{item.userName}:</span> {item.notes}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -125,6 +136,11 @@ export default function ChecklistView({ items, onUpdate }: ChecklistViewProps) {
                 <p className="text-sm text-muted">
                   {item.quantity} × GHS {item.price.toFixed(2)} = GHS {(item.quantity * item.price).toFixed(2)}
                 </p>
+                {item.notes && (
+                  <p className="text-xs text-[var(--brown)] mt-1 italic">
+                    📝 {item.notes}
+                  </p>
+                )}
               </div>
               {item.isPaid && (
                 <span className="text-green-600 text-sm font-medium">Paid</span>

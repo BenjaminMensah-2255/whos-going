@@ -2,16 +2,16 @@
 
 @theme {
   /* Boutique Color Palette */
-  --color-cream: #FAF8F5;
-  --color-beige: #E8E3DA;
-  --color-sand: #D4CFC4;
-  --color-charcoal: #2C2C2C;
-  --color-soft-black: #1A1A1A;
-  --color-warm-gray: #8B8680;
-  --color-accent-green: #4CAF50;
-  --color-accent-yellow: #FFC107;
-  --color-accent-red: #F44336;
-  
+  --color-cream: #faf8f5;
+  --color-beige: #e8e3da;
+  --color-sand: #d4cfc4;
+  --color-charcoal: #2c2c2c;
+  --color-soft-black: #1a1a1a;
+  --color-warm-gray: #8b8680;
+  --color-accent-green: #4caf50;
+  --color-accent-yellow: #ffc107;
+  --color-accent-red: #f44336;
+
   --color-background: var(--color-cream);
   --color-foreground: var(--color-charcoal);
 }
@@ -19,7 +19,15 @@
 body {
   background: var(--color-cream);
   color: var(--color-charcoal);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    var(--font-poppins),
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Inter",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
 }
 
 /* Custom component classes */
