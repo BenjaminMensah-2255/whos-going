@@ -3,7 +3,15 @@
 import { redirect } from 'next/navigation';
 import dbConnect from '@/lib/db/mongodb';
 import { User } from '@/lib/db/models/User';
-import { setCurrentUserId, getCurrentUser as getUser } from '@/lib/auth';
+import { setCurrentUserId, getCurrentUser as getUser, clearAuth } from '@/lib/auth';
+
+/**
+ * Logout the current user
+ */
+export async function logoutUser() {
+  await clearAuth();
+  redirect('/login');
+}
 
 /**
  * Login or create a user by name

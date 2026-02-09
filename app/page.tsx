@@ -34,6 +34,15 @@ export default async function HomePage() {
               <User className="w-4 h-4" />
               Profile
             </Link>
+            <form action={async () => {
+              'use server';
+              const { logoutUser } = await import('@/app/actions/user-actions');
+              await logoutUser();
+            }}>
+              <button className="btn-secondary text-sm px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50">
+                Logout
+              </button>
+            </form>
             <Link href="/runs/new" className="btn-primary text-sm px-3 py-2">
               + New Run
             </Link>

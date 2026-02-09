@@ -90,9 +90,19 @@ export default function ProfilePage() {
               <User className="w-6 h-6" />
               My Profile
             </h1>
-            <a href="/" className="btn-secondary">
-              ← Back to Home
-            </a>
+            <div className="flex gap-3">
+              <a href="/" className="btn-secondary">
+                ← Back to Home
+              </a>
+              <form action={async () => {
+                const { logoutUser } = await import('@/app/actions/user-actions');
+                await logoutUser();
+              }}>
+                <button className="btn-secondary text-red-600 hover:text-red-700 hover:bg-red-50">
+                  Logout
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </header>
