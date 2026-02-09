@@ -69,7 +69,7 @@ export default function LoginPage() {
 
             <div>
               <label htmlFor="email" className="label">
-                Email (optional)
+                Email Address
               </label>
               <input
                 type="email"
@@ -77,9 +77,10 @@ export default function LoginPage() {
                 name="email"
                 className="input-field"
                 placeholder="your.email@example.com"
+                required
               />
               <p className="text-xs text-muted mt-1">
-                Get notified when someone posts a new run
+                We'll send you notifications about your runs
               </p>
             </div>
 

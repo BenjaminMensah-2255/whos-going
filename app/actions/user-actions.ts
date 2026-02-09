@@ -18,34 +18,36 @@ export async function loginUser(name: string, email?: string) {
       return { success: false, error: 'Name must be at least 2 characters' };
     }
 
-    // Trim email if provided
+    // Validate email
     const trimmedEmail = email?.trim();
-
-    // Check if email is already used by a different user
-    if (trimmedEmail) {
-      const existingEmailUser = await User.findOne({ email: trimmedEmail });
-      if (existingEmailUser && existingEmailUser.name !== trimmedName) {
-        return { 
-          success: false, 
-          error: 'This email is already registered to another account. Please use a different email or login with the correct name.' 
-        };
-      }
+    if (!trimmedEmail) {
+      return { success: false, error: 'Email is required' };
     }
 
-    // Find existing user or create new one
-    let user = await User.findOne({ name: trimmedName });
+    // Find existing user by email
+    let user = await User.findOne({ email: trimmedEmail });
     
-    if (!user) {
+    if (user) {
+      // If user exists, update name if needed (optional, or we could require name match)
+      // For now, let's just ensure we return this user. 
+      // If the name is DIFFERENT, maybe we should warn? 
+      // But the prompt says "login with name and email". 
+      // Let's assume broad matching: if email matches, use that user. 
+      // If name is different, maybe update it?
+      if (user.name !== trimmedName) {
+        user.name = trimmedName;
+        await user.save();
+      }
+    } else {
+      // Check if name is taken by a DIFFERENT email (unlikely if unique constraint is on email, but possible on name?)
+      // We don't have unique constraint on name in schema.
+      
+      // Create new user
       user = await User.create({ 
         name: trimmedName,
-        email: trimmedEmail || undefined,
-        notificationsEnabled: !!trimmedEmail,
+        email: trimmedEmail,
+        notificationsEnabled: true,
       });
-    } else if (trimmedEmail) {
-      // Update email if provided and user exists
-      user.email = trimmedEmail;
-      user.notificationsEnabled = true;
-      await user.save();
     }
 
     // Set auth cookie
