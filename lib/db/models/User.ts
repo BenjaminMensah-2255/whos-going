@@ -2,18 +2,19 @@ import mongoose, { Schema, model, models, Document } from 'mongoose';
 
 export interface IUser extends Document {
   _id: mongoose.Types.ObjectId;
-  name: string;
-  email?: string;
-  phoneNumber: string;
+  name?: string;
+  email: string;
+  phoneNumber?: string;
   emailVerified: boolean;
   notificationsEnabled: boolean;
+  authToken?: string;
+  authTokenExpiry?: Date;
   createdAt: Date;
 }
 
 const UserSchema = new Schema<IUser>({
   name: {
     type: String,
-    required: [true, 'Name is required'],
     trim: true,
     minlength: [2, 'Name must be at least 2 characters'],
     maxlength: [50, 'Name must be less than 50 characters'],
@@ -28,9 +29,13 @@ const UserSchema = new Schema<IUser>({
   },
   phoneNumber: {
     type: String,
-    required: [true, 'Phone number is required'],
     trim: true,
   },
+  authToken: {
+    type: String,
+    select: false,
+  },
+  authTokenExpiry: Date,
   emailVerified: {
     type: Boolean,
     default: false,
