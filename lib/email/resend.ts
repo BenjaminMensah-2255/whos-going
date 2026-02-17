@@ -543,3 +543,101 @@ export async function notifyUsersAboutNewRun(
     return { sent: 0, failed: 0 };
   }
 }
+
+export async function sendMagicLinkEmail(
+  to: string,
+  url: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    console.log(`📧 Attempting to send magic link to: ${to}`);
+    
+    const transporter = createTransporter();
+    if (!transporter) {
+      return { success: false, error: 'Email transporter not configured' };
+    }
+
+    const mailOptions = {
+      from: `"Who's Going" <${process.env.GMAIL_USER}>`,
+      to,
+      subject: `✨ Log in to Who's Going`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                line-height: 1.6;
+                color: #2C2C2C;
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+              }
+              .container {
+                background: #FFFBF5;
+                border: 2px solid #E8DCC8;
+                border-radius: 12px;
+                padding: 30px;
+                text-align: center;
+              }
+              h1 {
+                color: #2C2C2C;
+                margin: 0 0 20px 0;
+                font-size: 24px;
+              }
+              .button {
+                display: inline-block;
+                background: #8B4513;
+                color: white !important;
+                padding: 14px 28px;
+                text-decoration: none;
+                border-radius: 8px;
+                font-weight: 600;
+                margin: 20px 0;
+              }
+              .link {
+                color: #8B4513;
+                word-break: break-all;
+              }
+              .footer {
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #E8DCC8;
+                color: #666;
+                font-size: 12px;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>✨ Your Magic Link</h1>
+              
+              <p>Click the button below to log in to Who's Going:</p>
+              
+              <a href="${url}" class="button">Log In</a>
+              
+              <p style="font-size: 14px; color: #666;">
+                Or copy and paste this link:<br>
+                <a href="${url}" class="link">${url}</a>
+              </p>
+              
+              <div class="footer">
+                <p>If you didn't request this link, you can safely ignore this email.</p>
+              </div>
+            </div>
+          </body>
+        </html>
+      `,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ Magic link sent successfully to ${to}. Message ID: ${info.messageId}`);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Failed to send magic link:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Failed to send email' 
+    };
+  }
+}

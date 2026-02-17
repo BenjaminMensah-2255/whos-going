@@ -26,23 +26,14 @@ export default function ProfilePage() {
     setLoading(true);
     const currentUser = await getCurrentUser();
     if (currentUser) {
-      // Fetch full user details including email
-      const response = await fetch('/api/debug-users');
-      const data = await response.json();
-      
-      if (data.success) {
-        const fullUser = data.users.find((u: any) => u.name === currentUser.name);
-        if (fullUser) {
-          setUser({
-            id: currentUser.id,
-            name: currentUser.name,
-            email: fullUser.email !== 'No email' ? fullUser.email : undefined,
-            phoneNumber: fullUser.phoneNumber,
-            notificationsEnabled: fullUser.notificationsEnabled,
-            createdAt: currentUser.createdAt,
-          });
-        }
-      }
+      setUser({
+        id: currentUser.id,
+        name: currentUser.name || '',
+        email: currentUser.email,
+        phoneNumber: currentUser.phoneNumber,
+        notificationsEnabled: true, // We'll fetch this if needed
+        createdAt: currentUser.createdAt,
+      });
     }
     setLoading(false);
   }

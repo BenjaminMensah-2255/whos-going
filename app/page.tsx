@@ -14,6 +14,16 @@ export default async function HomePage() {
     redirect('/login');
   }
 
+  // Check if profile is complete, redirect to onboarding if not
+  if (user.name && user.email) {
+    const isDefaultName = user.name === user.email.split('@')[0];
+    const needsOnboarding = isDefaultName || !user.phoneNumber || !user.name;
+    
+    if (needsOnboarding) {
+      redirect('/onboarding');
+    }
+  }
+
   const runs = await getActiveRuns();
 
   return (

@@ -1,37 +1,77 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
-import { loginUser } from '@/app/actions/user-actions';
-import { useRouter } from 'next/navigation';
+import { useState, FormEvent, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { requestMagicLink } from '@/app/actions/user-actions';
 
 export default function LoginPage() {
-  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const router = useRouter();
+  const [isSent, setIsSent] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      if (errorParam === 'invalid-link') {
+        setError('Invalid or missing login link');
+      } else if (errorParam === 'expired') {
+        setError('This login link has expired or has already been used');
+      } else {
+        setError(decodeURIComponent(errorParam));
+      }
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    const formData = new FormData(e.currentTarget as HTMLFormElement);
-    const email = formData.get('email') as string;
-    const phoneNumber = formData.get('phoneNumber') as string;
-
-    const result = await loginUser(name, email || undefined, phoneNumber);
+    const result = await requestMagicLink(email);
     
     if (result.success) {
-      router.push('/');
-      router.refresh();
+      setIsSent(true);
     } else {
-      setError(result.error || 'Failed to login');
+      setError(result.error || 'Failed to send login link');
       setIsLoading(false);
     }
   }
 
+  if (isSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4 bg-[var(--cream)]">
+        <div className="max-w-md w-full text-center">
+          <div className="card">
+            <div className="text-4xl mb-4">📧</div>
+            <h2 className="text-2xl font-semibold text-[var(--charcoal)] mb-2">
+              Check your email
+            </h2>
+            <p className="text-muted mb-6">
+              We sent a login link to <strong>{email}</strong>
+            </p>
+            <p className="text-sm text-muted mb-6">
+              Click the link in the email to sign in. You can close this tab.
+            </p>
+            <button 
+              onClick={() => {
+                setIsSent(false);
+                setIsLoading(false);
+                setEmail('');
+              }}
+              className="text-[var(--brown)] hover:scale-105 transition-transform text-sm font-medium"
+            >
+              Try a different email
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-[var(--cream)]">
       <div className="w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-8">
@@ -46,28 +86,10 @@ export default function LoginPage() {
         {/* Login Card */}
         <div className="card">
           <h2 className="text-2xl font-semibold text-[var(--charcoal)] mb-6">
-            Welcome
+            Welcome Back
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="name" className="label">
-                What's your name?
-              </label>
-              <input
-                type="text"
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="input-field"
-                placeholder="Enter your name"
-                required
-                minLength={2}
-                maxLength={50}
-                autoFocus
-              />
-            </div>
-
             <div>
               <label htmlFor="email" className="label">
                 Email Address
@@ -75,31 +97,13 @@ export default function LoginPage() {
               <input
                 type="email"
                 id="email"
-                name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="input-field"
                 placeholder="your.email@example.com"
                 required
+                autoFocus
               />
-              <p className="text-xs text-muted mt-1">
-                We'll send you notifications about your runs
-              </p>
-            </div>
-
-            <div>
-              <label htmlFor="phoneNumber" className="label">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                id="phoneNumber"
-                name="phoneNumber"
-                className="input-field"
-                placeholder="024 123 4567"
-                required
-              />
-              <p className="text-xs text-muted mt-1">
-                Shared with others only when you create a run
-              </p>
             </div>
             
             {error && (
@@ -110,17 +114,17 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={isLoading || name.trim().length < 2}
+              disabled={isLoading || !email}
               className="btn-primary w-full"
             >
-              {isLoading ? 'Logging in...' : 'Continue'}
+              {isLoading ? 'Sending Link...' : 'Send Login Link'}
             </button>
           </form>
         </div>
 
         {/* Footer Info */}
         <p className="text-center text-sm text-muted mt-6">
-          Simple name-based authentication. No passwords required.
+          We'll send you a magic link to sign in password-free.
         </p>
       </div>
     </div>
