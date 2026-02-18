@@ -75,7 +75,7 @@ export default async function HomePage() {
             <p className="text-muted mb-6">
               Be the first to post a run and let others join!
             </p>
-            <Link href="/runs/new" className="btn-primary inline-block">
+            <Link href="/runs/new" className="btn-primary inline-block px-6 py-3">
               Create First Run
             </Link>
           </div>
