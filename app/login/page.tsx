@@ -115,7 +115,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={isLoading || !email}
-              className="btn-primary w-full"
+              className="btn-primary w-full py-3"
             >
               {isLoading ? 'Sending Link...' : 'Send Login Link'}
             </button>

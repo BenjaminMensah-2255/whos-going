@@ -76,20 +76,20 @@ export default function ProfilePage() {
       {/* Header */}
       <header className="bg-white border-b border-[var(--sand)]">
         <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <h1 className="text-2xl font-bold text-[var(--charcoal)] flex items-center gap-2">
-              <User className="w-6 h-6" />
+              <User className="w-6 h-6 shrink-0" />
               My Profile
             </h1>
-            <div className="flex gap-3">
-              <a href="/" className="btn-secondary">
+            <div className="flex gap-2">
+              <a href="/" className="btn-secondary text-sm px-3 py-2 flex items-center whitespace-nowrap">
                 ← Back to Home
               </a>
               <form action={async () => {
                 const { logoutUser } = await import('@/app/actions/user-actions');
                 await logoutUser();
               }}>
-                <button className="btn-secondary text-red-600 hover:text-red-700 hover:bg-red-50">
+                <button className="btn-secondary text-sm px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 whitespace-nowrap">
                   Logout
                 </button>
               </form>
@@ -118,7 +118,7 @@ export default function ProfilePage() {
             <div>
               <label className="label">Email Address</label>
               {user.email ? (
-                <div className="input-field bg-[var(--beige)]/20 cursor-not-allowed">
+                <div className="input-field bg-[var(--beige)]/20 cursor-not-allowed overflow-hidden" style={{ wordBreak: 'break-all' }}>
                   {user.email}
                 </div>
               ) : (
