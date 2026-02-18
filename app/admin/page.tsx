@@ -71,10 +71,6 @@ export default function AdminLoginPage() {
             </button>
           </form>
         </div>
-
-        <p className="text-center text-sm text-muted mt-6">
-          Default password: admin123 (change in .env.local)
-        </p>
       </div>
     </div>
   );
