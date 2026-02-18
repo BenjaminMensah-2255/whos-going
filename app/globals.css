@@ -47,7 +47,6 @@ body {
 .btn-primary {
   background: var(--color-charcoal);
   color: white;
-  padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: 500;
   transition: all 0.2s;
@@ -69,7 +68,6 @@ body {
 .btn-secondary {
   border: 1px solid var(--color-sand);
   color: var(--color-charcoal);
-  padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   font-weight: 500;
   transition: all 0.2s;

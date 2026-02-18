@@ -40,20 +40,21 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-end">
-            <Link href="/profile" className="btn-secondary flex items-center gap-2 text-sm px-3 py-2">
+            <Link href="/profile" className="btn-secondary flex items-center gap-2 text-sm h-9 px-4">
               <User className="w-4 h-4" />
               Profile
             </Link>
-           
-            <Link href="/runs/new" className="btn-primary text-sm px-3 py-2">
+
+            <Link href="/runs/new" className="btn-primary text-sm h-9 px-4 flex items-center whitespace-nowrap">
               + New Run
             </Link>
-             <form action={async () => {
+
+            <form action={async () => {
               'use server';
               const { logoutUser } = await import('@/app/actions/user-actions');
               await logoutUser();
             }}>
-              <button className="btn-secondary text-sm px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50">
+              <button className="btn-secondary text-sm h-9 px-4 text-red-600 hover:text-red-700 hover:bg-red-50">
                 Logout
               </button>
             </form>
