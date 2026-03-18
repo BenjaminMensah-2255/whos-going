@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { isAdminAuthenticated, getAdminStats } from '@/app/actions/admin-actions';
+import { isAdminAuthenticated, getAdminStats, adminLogout } from '@/app/actions/admin-actions';
+import { ArrowLeft, LogOut } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,12 +29,25 @@ export default async function AdminDashboard() {
             </p>
           </div>
           <div className="flex gap-3">
-            <Link href="/" className="btn-secondary">
-              ← Back to App
+            <Link href="/" className="btn-secondary h-9 px-4 text-sm flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to App
             </Link>
-            <Link href="/admin" className="btn-secondary">
-              Logout
-            </Link>
+            
+            <form action={async () => {
+              'use server';
+              const { adminLogout } = await import('@/app/actions/admin-actions');
+              await adminLogout();
+              redirect('/admin');
+            }}>
+              <button 
+                type="submit" 
+                className="btn-secondary h-9 px-4 text-sm flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </button>
+            </form>
           </div>
         </div>
       </header>

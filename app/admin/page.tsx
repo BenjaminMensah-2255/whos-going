@@ -65,7 +65,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading || !password}
-              className="btn-primary w-full"
+              className="btn-primary w-full py-3"
             >
               {isLoading ? 'Logging in...' : 'Login'}
             </button>
