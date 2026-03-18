@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { addItem } from '@/app/actions/item-actions';
 import { formatCurrency } from '@/lib/utils/currency';
+import { Plus, X, Send } from 'lucide-react';
 
 interface AddItemFormProps {
   runId: string;
@@ -43,9 +44,10 @@ export default function AddItemForm({ runId, onSuccess }: AddItemFormProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="btn-primary w-full"
+        className="btn-primary w-full py-4 flex items-center justify-center gap-2 text-lg"
       >
-        + Add Item
+        <Plus className="w-6 h-6" />
+        Add Item
       </button>
     );
   }
@@ -135,23 +137,29 @@ export default function AddItemForm({ runId, onSuccess }: AddItemFormProps) {
         )}
 
         {/* Actions */}
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <button
             type="button"
             onClick={() => {
               setIsOpen(false);
               setError('');
             }}
-            className="btn-secondary flex-1"
+            className="btn-secondary flex-1 py-3 flex items-center justify-center gap-2 border-[var(--sand)] order-2 sm:order-1"
           >
+            <X className="w-4 h-4" />
             Cancel
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="btn-primary flex-1"
+            className="btn-primary flex-[2] py-3 flex items-center justify-center gap-2 order-1 sm:order-2"
           >
-            {isLoading ? 'Adding...' : 'Add Item'}
+            {isLoading ? 'Adding...' : (
+              <>
+                <Send className="w-4 h-4" />
+                Add Item
+              </>
+            )}
           </button>
         </div>
       </form>
