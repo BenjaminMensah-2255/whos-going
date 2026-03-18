@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 export default function TestEmailPage() {
   const [email, setEmail] = useState('');
@@ -42,9 +44,10 @@ export default function TestEmailPage() {
             <h1 className="text-2xl font-bold text-[var(--charcoal)]">
               📧 Test Email Configuration
             </h1>
-            <a href="/admin/dashboard" className="btn-secondary">
-              ← Back to Dashboard
-            </a>
+            <Link href="/admin/dashboard" className="btn-secondary h-9 px-4 text-sm flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </Link>
           </div>
         </div>
       </header>
@@ -89,7 +92,7 @@ export default function TestEmailPage() {
             <button
               type="submit"
               disabled={isLoading || !email}
-              className="btn-primary"
+              className="btn-primary w-full py-3"
             >
               {isLoading ? 'Sending...' : 'Send Test Email'}
             </button>
