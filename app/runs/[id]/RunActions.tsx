@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { closeRun, completeRun } from '@/app/actions/run-actions';
-import { Lock, CheckCircle2 } from 'lucide-react';
+import { closeRun, completeRun, deleteRun } from '@/app/actions/run-actions';
+import { Lock, CheckCircle2, Trash2 } from 'lucide-react';
 
 import ExtendRunButton from '@/components/ExtendRunButton';
 import ConfirmationModal from '@/components/ConfirmationModal';
@@ -18,6 +18,18 @@ export default function RunActions({ runId, status }: RunActionsProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  async function handleDelete() {
+    setIsLoading(true);
+    const result = await deleteRun(runId);
+    if (result.success) {
+      router.push('/');
+    } else {
+      alert(result.error);
+    }
+    setIsLoading(false);
+  }
 
   async function handleClose() {
     setIsLoading(true);
@@ -89,6 +101,15 @@ export default function RunActions({ runId, status }: RunActionsProps) {
             This run is completed and archived.
           </p>
         )}
+
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          disabled={isLoading}
+          className="w-full py-3 text-red-600 hover:text-red-700 font-medium flex items-center justify-center gap-2 hover:bg-red-50 rounded-xl transition-colors mt-4"
+        >
+          <Trash2 className="w-4 h-4" />
+          Delete Run
+        </button>
       </div>
 
       <ConfirmationModal
@@ -110,6 +131,17 @@ export default function RunActions({ runId, status }: RunActionsProps) {
         title="Mark as Completed?"
         message="This will archive the run and return you to the dashboard. The items list will still be visible to attendees."
         confirmText="Complete Run"
+      />
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        isLoading={isLoading}
+        title="Delete Run?"
+        message="This will permanently delete this run and all associated items. This action cannot be undone."
+        confirmText="Delete Run"
+        variant="danger"
       />
     </div>
   );

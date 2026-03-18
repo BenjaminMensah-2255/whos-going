@@ -30,12 +30,6 @@ const RunSchema = new Schema<IRun>(
     departureTime: {
       type: Date,
       required: [true, 'Departure time is required'],
-      validate: {
-        validator: function (value: Date) {
-          return value > new Date();
-        },
-        message: 'Departure time must be in the future',
-      },
     },
     note: {
       type: String,

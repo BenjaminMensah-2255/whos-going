@@ -334,3 +334,39 @@ export async function extendRun(runId: string, additionalMinutes: number) {
     return { success: false, error: 'Failed to extend run' };
   }
 }
+
+/**
+ * Delete a run (and all its items)
+ */
+export async function deleteRun(runId: string) {
+  try {
+    const userId = await getCurrentUserId();
+    if (!userId) {
+      return { success: false, error: 'Not authenticated' };
+    }
+
+    await dbConnect();
+
+    const run = await Run.findById(runId);
+    if (!run) {
+      return { success: false, error: 'Run not found' };
+    }
+
+    // Only runner can delete the run
+    if (run.runnerUserId.toString() !== userId) {
+      return { success: false, error: 'Only the runner can delete this run' };
+    }
+
+    // Delete all items first
+    await Item.deleteMany({ runId });
+    
+    // Delete the run
+    await Run.findByIdAndDelete(runId);
+
+    revalidatePath('/');
+    return { success: true };
+  } catch (error) {
+    console.error('Delete run error:', error);
+    return { success: false, error: 'Failed to delete run' };
+  }
+}
