@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { extendRun } from '@/app/actions/run-actions';
-import { Clock } from 'lucide-react';
+import { Clock, Plus } from 'lucide-react';
 
 interface ExtendRunButtonProps {
   runId: string;
@@ -26,13 +26,13 @@ export default function ExtendRunButton({ runId }: ExtendRunButtonProps) {
   };
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative block text-left">
       <div>
         <button
           type="button"
           onClick={() => setShowOptions(!showOptions)}
           disabled={loading}
-          className="inline-flex justify-center items-center gap-2 w-full px-4 py-2 text-sm font-medium text-[var(--charcoal)] bg-white border border-[var(--sand)] rounded-md shadow-sm hover:bg-[var(--cream)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--brown)]"
+          className="btn-secondary w-full py-3 flex items-center justify-center gap-2"
         >
           {loading ? 'Updating...' : (
             <>
@@ -44,19 +44,22 @@ export default function ExtendRunButton({ runId }: ExtendRunButtonProps) {
       </div>
 
       {showOptions && (
-        <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black/5 focus:outline-none z-50">
+        <div className="absolute right-0 bottom-full mb-2 w-full sm:w-64 rounded-2xl shadow-2xl bg-white ring-1 ring-black/5 focus:outline-none z-50 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
           <div className="py-1" role="menu" aria-orientation="vertical">
-            <div className="px-4 py-2 text-xs text-gray-500 border-b border-gray-100">
+            <div className="px-5 py-3 text-xs font-bold text-muted uppercase tracking-wider bg-gray-50/50 border-b border-gray-100 mb-1">
               Add time & re-open
             </div>
             {[5, 10, 15, 30].map((minutes) => (
               <button
                 key={minutes}
                 onClick={() => handleExtend(minutes)}
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-[var(--beige)] hover:text-gray-900"
+                className="group flex w-full items-center gap-3 px-5 py-3 text-sm text-[var(--charcoal)] hover:bg-[var(--beige)] transition-colors"
                 role="menuitem"
               >
-                + {minutes} minutes
+                <div className="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-white transition-colors">
+                  <Plus className="w-3.5 h-3.5 text-muted group-hover:text-[var(--charcoal)]" />
+                </div>
+                <span className="font-medium">+ {minutes} minutes</span>
               </button>
             ))}
           </div>

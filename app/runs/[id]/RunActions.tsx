@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { closeRun, completeRun } from '@/app/actions/run-actions';
+import { Lock, CheckCircle2 } from 'lucide-react';
 
 import ExtendRunButton from '@/components/ExtendRunButton';
+import ConfirmationModal from '@/components/ConfirmationModal';
 
 interface RunActionsProps {
   runId: string;
@@ -14,13 +16,14 @@ interface RunActionsProps {
 export default function RunActions({ runId, status }: RunActionsProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [showCloseModal, setShowCloseModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
 
   async function handleClose() {
-    if (!confirm('Close this run? No more items can be added.')) return;
-    
     setIsLoading(true);
     const result = await closeRun(runId);
     if (result.success) {
+      setShowCloseModal(false);
       router.refresh();
     } else {
       alert(result.error);
@@ -29,11 +32,10 @@ export default function RunActions({ runId, status }: RunActionsProps) {
   }
 
   async function handleComplete() {
-    if (!confirm('Mark this run as completed? It will be archived.')) return;
-    
     setIsLoading(true);
     const result = await completeRun(runId);
     if (result.success) {
+      setShowCompleteModal(false);
       router.push('/');
     } else {
       alert(result.error);
@@ -54,21 +56,31 @@ export default function RunActions({ runId, status }: RunActionsProps) {
 
         {status === 'open' && (
           <button
-            onClick={handleClose}
+            onClick={() => setShowCloseModal(true)}
             disabled={isLoading}
-            className="btn-secondary w-full"
+            className="btn-secondary w-full py-3 flex items-center justify-center gap-2"
           >
-            {isLoading ? 'Closing...' : 'Close Run (Stop Accepting Items)'}
+            {isLoading ? 'Closing...' : (
+              <>
+                <Lock className="w-4 h-4" />
+                Close Run (Stop Accepting Items)
+              </>
+            )}
           </button>
         )}
 
         {(status === 'open' || status === 'closed') && (
           <button
-            onClick={handleComplete}
+            onClick={() => setShowCompleteModal(true)}
             disabled={isLoading}
-            className="btn-primary w-full"
+            className="btn-primary w-full py-3 flex items-center justify-center gap-2"
           >
-            {isLoading ? 'Completing...' : 'Mark as Completed'}
+            {isLoading ? 'Completing...' : (
+              <>
+                <CheckCircle2 className="w-5 h-5" />
+                Mark as Completed
+              </>
+            )}
           </button>
         )}
 
@@ -78,6 +90,27 @@ export default function RunActions({ runId, status }: RunActionsProps) {
           </p>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={showCloseModal}
+        onClose={() => setShowCloseModal(false)}
+        onConfirm={handleClose}
+        isLoading={isLoading}
+        title="Close Run?"
+        message="This will stop accepting new items for this run. You can still see who's going, but the order will be locked."
+        confirmText="Close Run"
+        variant="warning"
+      />
+
+      <ConfirmationModal
+        isOpen={showCompleteModal}
+        onClose={() => setShowCompleteModal(false)}
+        onConfirm={handleComplete}
+        isLoading={isLoading}
+        title="Mark as Completed?"
+        message="This will archive the run and return you to the dashboard. The items list will still be visible to attendees."
+        confirmText="Complete Run"
+      />
     </div>
   );
 }

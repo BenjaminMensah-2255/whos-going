@@ -3,6 +3,7 @@
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Plus, X } from 'lucide-react';
 import { createRun } from '@/app/actions/run-actions';
 
 export default function NewRunPage() {
@@ -126,16 +127,24 @@ export default function NewRunPage() {
             )}
 
             {/* Actions */}
-            <div className="flex gap-3">
-              <Link href="/" className="btn-secondary flex-1 text-center">
+            <div className="flex gap-4">
+              <Link href="/" className="btn-secondary flex-1 py-3 flex items-center justify-center gap-2">
+                <X className="w-4 h-4" />
                 Cancel
               </Link>
               <button
                 type="submit"
                 disabled={isLoading}
-                className="btn-primary flex-1"
+                className="btn-primary flex-[2] py-3 flex items-center justify-center gap-2"
               >
-                {isLoading ? 'Creating...' : 'Post Run'}
+                {isLoading ? (
+                  'Creating...'
+                ) : (
+                  <>
+                    <Plus className="w-5 h-5" />
+                    Post Run
+                  </>
+                )}
               </button>
             </div>
           </form>

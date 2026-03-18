@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Users } from 'lucide-react';
 import { getAllUsers, updateUserAdmin, deleteUserAdmin } from '@/app/actions/admin-actions';
 
 interface UserData {
@@ -82,9 +82,14 @@ export default function UsersManagementPage() {
       <header className="bg-white border-b border-[var(--sand)] sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-[var(--charcoal)]">
-              👥 User Management
-            </h1>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600">
+                <Users className="w-6 h-6" />
+              </div>
+              <h1 className="text-2xl font-bold text-[var(--charcoal)]">
+                User Management
+              </h1>
+            </div>
             <Link href="/admin/dashboard" className="btn-secondary h-9 px-4 text-sm flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" />
               Back to Dashboard

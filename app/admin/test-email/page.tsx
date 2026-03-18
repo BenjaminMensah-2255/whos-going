@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Mail } from 'lucide-react';
 
 export default function TestEmailPage() {
   const [email, setEmail] = useState('');
@@ -41,9 +41,14 @@ export default function TestEmailPage() {
       <header className="bg-white border-b border-[var(--sand)]">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-[var(--charcoal)]">
-              📧 Test Email Configuration
-            </h1>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
+                <Mail className="w-6 h-6" />
+              </div>
+              <h1 className="text-2xl font-bold text-[var(--charcoal)]">
+                Test Email Configuration
+              </h1>
+            </div>
             <Link href="/admin/dashboard" className="btn-secondary h-9 px-4 text-sm flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" />
               Back to Dashboard
