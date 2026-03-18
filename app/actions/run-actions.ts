@@ -370,3 +370,49 @@ export async function deleteRun(runId: string) {
     return { success: false, error: 'Failed to delete run' };
   }
 }
+
+/**
+ * Get all runs for a specific user (as runner)
+ */
+export async function getUserRunHistory(): Promise<RunWithDetails[]> {
+  try {
+    const userId = await getCurrentUserId();
+    if (!userId) return [];
+
+    await dbConnect();
+
+    const runs = await Run.find({
+      runnerUserId: new mongoose.Types.ObjectId(userId)
+    })
+      .sort({ createdAt: -1 })
+      .populate('runnerUserId', 'name phoneNumber')
+      .lean();
+
+    // Get item counts
+    const runIds = runs.map((run) => run._id);
+    const itemCounts = await Item.aggregate([
+      { $match: { runId: { $in: runIds } } },
+      { $group: { _id: '$runId', count: { $sum: 1 } } },
+    ]);
+
+    const itemCountMap = new Map(
+      itemCounts.map((item) => [item._id.toString(), item.count])
+    );
+
+    return runs.map((run) => ({
+      id: run._id.toString(),
+      vendorName: run.vendorName,
+      runnerUserId: run.runnerUserId._id.toString(),
+      runnerName: (run.runnerUserId as any).name,
+      runnerPhoneNumber: (run.runnerUserId as any).phoneNumber,
+      departureTime: run.departureTime.toISOString(),
+      note: run.note,
+      status: run.status,
+      itemCount: itemCountMap.get(run._id.toString()) || 0,
+      createdAt: run.createdAt.toISOString(),
+    }));
+  } catch (error) {
+    console.error('Get user run history error:', error);
+    return [];
+  }
+}

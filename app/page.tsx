@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getActiveRuns } from './actions/run-actions';
 import { getCurrentUser } from './actions/user-actions';
 import RunCard from '@/components/RunCard';
-import { User, ShoppingBag } from 'lucide-react';
+import { User, ShoppingBag, History } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,6 +40,11 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-end">
+            <Link href="/history" className="btn-secondary flex items-center gap-2 text-sm h-9 px-4">
+              <History className="w-4 h-4" />
+              History
+            </Link>
+
             <Link href="/profile" className="btn-secondary flex items-center gap-2 text-sm h-9 px-4">
               <User className="w-4 h-4" />
               Profile
